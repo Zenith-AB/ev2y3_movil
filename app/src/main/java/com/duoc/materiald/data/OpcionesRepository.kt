@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-// ---------------------------------
 
 class OpcionesRepository(private val context: Context) {
 
@@ -22,7 +21,7 @@ class OpcionesRepository(private val context: Context) {
 
             val set = preferences[OPCIONES_KEY] ?: emptySet()
 
-            set.toList().sorted() // .sorted() para que siempre tengan el mismo orden
+            set.toList().sorted()
         }
 
 
