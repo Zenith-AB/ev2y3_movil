@@ -1,6 +1,7 @@
 package com.duoc.materiald.ui.screens
 
 // --- Importaciones Clave ---
+import android.app.Application // <-- IMPORTACIÓN AÑADIDA
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,24 +28,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext // <-- IMPORTACIÓN AÑADIDA
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.duoc.materiald.viewmodel.RuletaViewModel // <-- IMPORTAMOS EL VIEWMODEL
-import com.duoc.materiald.viewmodel.RuletaUiState // <-- IMPORTAMOS EL ESTADO
+import com.duoc.materiald.viewmodel.RuletaViewModel // Importamos el ViewModel
+import com.duoc.materiald.viewmodel.RuletaUiState // Importamos el Estado
+import com.duoc.materiald.viewmodel.RuletaViewModelFactory // <-- IMPORTACIÓN AÑADIDA
 
 @Composable
 fun PantallaRuleta(
     navController: NavController,
-    viewModel: RuletaViewModel = viewModel() // <-- ¡Magia! Obtenemos la instancia del ViewModel
+
+    // --- CAMBIO HECHO AQUÍ ---
+    // Ya no es = viewModel()
+    // Ahora usa la Fábrica para poder inyectar el Repositorio de DataStore.
+    viewModel: RuletaViewModel = viewModel(
+        factory = RuletaViewModelFactory(
+            LocalContext.current.applicationContext as Application
+        )
+    )
+    // --- FIN DEL CAMBIO ---
 ) {
     // --- CONEXIÓN CON EL VIEWMODEL ---
     // Observamos el 'uiState' del ViewModel.
-    // 'collectAsStateWithLifecycle' asegura que esto solo pase
-    // cuando la pantalla esté activa (seguro y eficiente).
-    // Cada vez que el 'uiState' en el ViewModel cambie,
-    // esta variable 'uiState' se actualizará y la UI se redibujará.
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     // Llamamos al Composable que dibuja la UI,
@@ -142,6 +150,8 @@ fun PantallaRuletaContent(
         }
     }
 }
+
+
 
 @Composable
 fun OpcionItem(
