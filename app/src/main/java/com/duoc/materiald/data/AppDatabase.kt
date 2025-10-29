@@ -1,4 +1,27 @@
 package com.duoc.materiald.data
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 
-abstract class AppDatabase {
+@Database(entities = [OpcionItem::class, ResultadoItem::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun ruletaDao(): RuletaDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
+
+        fun getDatabase(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java,
+                    "ruleta_database" // Nombre del archivo de la BD
+                ).build()
+                INSTANCE = instance
+                instance
+            }
+        }
+    }
 }
