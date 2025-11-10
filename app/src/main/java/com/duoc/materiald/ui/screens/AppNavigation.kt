@@ -11,18 +11,19 @@ import com.duoc.materiald.ui.screens.PantallaRuleta
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = "ruleta") {
 
+    NavHost(
+        navController = navController,
+        startDestination = "ruleta"
+    ) {
         composable("ruleta") {
-            PantallaRuleta(navController = navController)
+            PantallaRuleta(navController)
         }
-
         composable("gestion") {
-            PantallaGestion(navController = navController)
+            PantallaGestion(navController)
         }
-
         composable("historial") {
-            PantallaHistorial(navController = navController)
+            PantallaHistorial(navController)
         }
     }
 }

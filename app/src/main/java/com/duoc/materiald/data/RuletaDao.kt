@@ -8,20 +8,24 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RuletaDao {
-    // --- Funciones para Opciones ---
-    @Query("SELECT * FROM opciones_ruleta")
-    fun getAllOpciones(): Flow<List<OpcionItem>> // Flow es para que se actualice solo (MVVM)
+
+    // -------- OPCIONES ----------
+    @Query("SELECT * FROM OpcionItem")
+    fun getOpciones(): Flow<List<OpcionItem>>
 
     @Insert
-    suspend fun insertOpcion(opcion: OpcionItem)
+    suspend fun insertOpcion(item: OpcionItem)
 
     @Delete
-    suspend fun deleteOpcion(opcion: OpcionItem)
+    suspend fun deleteOpcion(item: OpcionItem)
 
-    // --- Funciones para Resultados (Historial) ---
-    @Query("SELECT * FROM historial_resultados ORDER BY fecha DESC")
-    fun getAllResultados(): Flow<List<ResultadoItem>>
+    // -------- HISTORIAL / RESULTADOS ----------
+    @Query("SELECT * FROM ResultadoItem ORDER BY timestamp DESC")
+    fun getResultados(): Flow<List<ResultadoItem>>
 
     @Insert
-    suspend fun insertResultado(resultado: ResultadoItem)
+    suspend fun insertResultado(item: ResultadoItem)
+
+    @Query("DELETE FROM ResultadoItem")
+    suspend fun clearResultados()
 }
