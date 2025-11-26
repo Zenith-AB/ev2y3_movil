@@ -8,9 +8,9 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitInstance {
     
-    // URL base - usa 10.0.2.2 para emulador Android (apunta a localhost de la máquina host)
-    // Para Railway, cambiar a la URL pública: "https://tu-proyecto.up.railway.app/"
-    private const val BASE_URL = "http://10.0.2.2:3000/"
+    // URL base - Railway production
+    // Para desarrollo local con emulador, usar: "http://10.0.2.2:3000/"
+    private const val BASE_URL = "https://ev2y3movil-production.up.railway.app/"
     
     // Cliente HTTP con logging para debugging
     private val okHttpClient = OkHttpClient.Builder()
