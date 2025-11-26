@@ -5,3 +5,11 @@ backend/node_modules/
 *.log
 *.DS_Store
 backend/ruleta.db
+
+# Android build files (no desplegar en Railway)
+ev2y3_movil-master/
+*.apk
+*.aab
+build/
+.gradle/
+local.properties
