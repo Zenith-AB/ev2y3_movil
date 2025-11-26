@@ -1,34 +1,68 @@
 package com.duoc.materiald.data
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringSetPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
+import com.duoc.materiald.data.api.OpcionRequest
+import com.duoc.materiald.data.api.RetrofitInstance
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+/**
+ * Repositorio que gestiona las opciones usando la API backend.
+ * Mantiene la interfaz Flow para compatibilidad con el ViewModel existente.
+ */
+class OpcionesRepository {
 
-class OpcionesRepository(private val context: Context) {
+    private val apiService = RetrofitInstance.apiService
 
-    private val OPCIONES_KEY = stringSetPreferencesKey("lista_opciones")
-
-
-    val opciones: Flow<List<String>> = context.dataStore.data
-        .map { preferences ->
-
-            val set = preferences[OPCIONES_KEY] ?: emptySet()
-
-            set.toList().sorted()
+    /**
+     * Obtiene las opciones desde la API como un Flow.
+     * Se actualiza cada vez que se llama a guardarOpciones.
+     */
+    val opciones: Flow<List<String>> = flow {
+        while (true) {
+            try {
+                val opcionesFromApi = apiService.getOpciones()
+                emit(opcionesFromApi.map { it.texto })
+            } catch (e: Exception) {
+                // En caso de error, emitir lista vacía
+                emit(emptyList())
+            }
+            // Polling cada 2 segundos para mantener la UI actualizada
+            delay(2000)
         }
+    }
 
-
-    suspend fun guardarOpciones(opciones: List<String>) {
-        context.dataStore.edit { settings ->
-
-            settings[OPCIONES_KEY] = opciones.toSet()
+    /**
+     * Guarda las opciones en la API.
+     * Compara con las opciones actuales y realiza las operaciones necesarias.
+     */
+    suspend fun guardarOpciones(nuevasOpciones: List<String>) {
+        try {
+            // Obtener opciones actuales de la API
+            val opcionesActuales = apiService.getOpciones()
+            
+            // Determinar qué opciones agregar
+            val opcionesAAgregar = nuevasOpciones.filter { nueva ->
+                opcionesActuales.none { it.texto == nueva }
+            }
+            
+            // Determinar qué opciones eliminar
+            val opcionesAEliminar = opcionesActuales.filter { actual ->
+                actual.texto !in nuevasOpciones
+            }
+            
+            // Agregar nuevas opciones
+            opcionesAAgregar.forEach { texto ->
+                apiService.createOpcion(OpcionRequest(texto))
+            }
+            
+            // Eliminar opciones que ya no están
+            opcionesAEliminar.forEach { opcion ->
+                apiService.deleteOpcion(opcion.id)
+            }
+        } catch (e: Exception) {
+            // Manejar errores silenciosamente por ahora
+            e.printStackTrace()
         }
     }
 }
