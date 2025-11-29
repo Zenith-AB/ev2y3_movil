@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Configuración para desarrollo: permite conexiones a APIs externas -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <!-- Confía en certificados del sistema -->
+            <certificates src="system" />
+            <!-- Confía en certificados de usuario (útil para debugging) -->
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+    
+    <!-- Configuración específica para dominios conocidos -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">zenquotes.io</domain>
+        <domain includeSubdomains="true">supabase.co</domain>
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>
